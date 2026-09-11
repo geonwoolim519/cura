@@ -1,0 +1,108 @@
+import { defineArtifact } from "./define";
+
+export const freeArtifacts = [
+  defineArtifact({
+    id: "fr-silla-crown",
+    name: "신라 금관",
+    museum: "국립중앙박물관",
+    period: "신라",
+    category: "금속공예",
+    material: "금",
+    description:
+      "신라 고분에서 출토된 금관이다. 나뭇가지 모양의 세움장식과 달개가 특징이며, 신라 왕실의 권위와 금속공예 기술을 상징하는 유물이다.",
+    keywords: ["신라", "금", "금관", "왕권", "금속공예", "무덤"],
+    imageFile: "Gold Crown of Silla Kingdom 01b.jpg",
+    modes: ["free"],
+  }),
+  defineArtifact({
+    id: "fr-pensive",
+    name: "금동미륵보살반가사유상",
+    museum: "국립중앙박물관",
+    period: "삼국",
+    category: "불교조각",
+    material: "금동",
+    description:
+      "국보 제78호 금동미륵보살반가사유상이다. 한쪽 다리를 내리고 손가락을 뺨에 댄 사유의 자세로, 삼국시대 불교 조각의 대표작으로 꼽힌다.",
+    keywords: ["삼국", "불교", "미륵", "금동", "조각", "사유"],
+    imageFile: "Pensive Bodhisattva (National Treasure No. 78) 01.jpg",
+    modes: ["free"],
+  }),
+  defineArtifact({
+    id: "fr-moonjar",
+    name: "백자 달항아리",
+    museum: "국립중앙박물관",
+    period: "조선",
+    category: "도자",
+    material: "백자",
+    description:
+      "국보 제262호 백자 달항아리다. 둥근 백자 항아리의 비대칭적인 흰 형태가 조선 백자의 미감을 대표하며, 실용과 아름다움이 만나는 조선 도자문화를 보여 준다.",
+    keywords: ["조선", "백자", "달항아리", "도자", "생활", "아름다움"],
+    imageFile: "White Porcelain Moon Jar (National Treasure No. 262) 03.jpg",
+    modes: ["free"],
+  }),
+  defineArtifact({
+    id: "fr-celadon",
+    name: "고려청자 투각 향완",
+    museum: "국립중앙박물관",
+    period: "고려",
+    category: "도자",
+    material: "청자",
+    description:
+      "고려시대 비색 청자로 만든 투각 향완이다. 향을 피우는 의례 용기이자 고려 청자 기술의 정점을 보여 주는 작품으로, 국보로 지정되어 있다.",
+    keywords: ["고려", "청자", "향", "의례", "도자", "불교"],
+    imageFile: "Korea-Goryeo-Celadon incense burner-01.jpg",
+    modes: ["free"],
+  }),
+  defineArtifact({
+    id: "fr-hunmin",
+    name: "훈민정음",
+    museum: "간송미술관",
+    period: "조선",
+    category: "문헌",
+    material: "종이",
+    description:
+      "세종 때 창제된 훈민정음의 해례본 계열 자료로 널리 알려진 한글 창제 문헌이다. 문자의 원리와 사용법을 설명해, 조선의 지식·언어 문화를 대표한다.",
+    keywords: ["조선", "훈민정음", "한글", "문자", "지식", "세종"],
+    imageFile: "Hunminjeongeum.jpg",
+    modes: ["free"],
+  }),
+  defineArtifact({
+    id: "fr-dagger",
+    name: "청동검과 검집",
+    museum: "국립김해박물관",
+    period: "청동기",
+    category: "무기",
+    material: "청동",
+    description:
+      "국립김해박물관이 소장한 청동검과 검집이다. 한반도 청동기 시대 지배층의 의기와 금속 주조 기술을 보여 주는 자료로, 복원된 형태로 전시되고 있다.",
+    keywords: ["청동기", "청동", "검", "무기", "왕권", "금속"],
+    imageFile: "Bronze Dagger and Scabbard. Restauration. Gimhae National Museum.jpg",
+    modes: ["free"],
+  }),
+  defineArtifact({
+    id: "fr-comb",
+    name: "김해 수가리 빗살무늬토기",
+    museum: "국립김해박물관",
+    period: "신석기",
+    category: "토기",
+    material: "토기",
+    description:
+      "김해 수가리에서 출토된 빗살무늬토기다. 입술 부근에 빗금 격자 문양을 새긴 신석기 토기로, 남해안 지역 선사 문화와 김해의 오랜 거주 역사를 보여 준다.",
+    keywords: ["신석기", "토기", "빗살무늬", "김해", "생활", "선사"],
+    imageFile: "Comb-pattern Pottery. Suga-ri, Gimhae. Gimhae National Museum.jpg",
+    modes: ["free"],
+  }),
+  defineArtifact({
+    id: "fr-incense",
+    name: "백제 금동대향로",
+    museum: "국립부여박물관",
+    period: "백제",
+    category: "금속공예",
+    material: "금동",
+    description:
+      "부여 능산리 절터에서 출토된 백제 금동대향로(국보)다. 연꽃 몸체와 산악·인물·동물 투각, 봉황 꼭지가 결합된 걸작으로, 백제의 공예와 정신세계를 상징한다.",
+    keywords: ["백제", "금동", "향로", "불교", "금속공예", "부여"],
+    imageFile: "Gilt-bronze Incense Burner of Baekje.jpg",
+    modes: ["free"],
+  }),
+];

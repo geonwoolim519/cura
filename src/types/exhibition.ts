@@ -1,0 +1,115 @@
+export type MuseumMode = "gongju" | "gimhae" | "free";
+
+export type VisitorPerspective =
+  | "general"
+  | "youth"
+  | "foreign"
+  | "specialist";
+
+export interface Artifact {
+  id: string;
+  name: string;
+  museum: string;
+  period: string;
+  category: string;
+  material: string;
+  description: string;
+  keywords: string[];
+  image: string;
+  imageFile: string;
+  source: string;
+  sourceUrl: string;
+  modes: MuseumMode[];
+}
+
+export interface PlacedArtifact {
+  instanceId: string;
+  artifactId: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  rotation: number;
+  displayOrder: number;
+}
+
+export type PanelKind = "panel" | "title";
+
+export interface ExhibitionPanel {
+  id: string;
+  kind: PanelKind;
+  title: string;
+  body: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export interface ScoreSet {
+  themeConnection: number;
+  composition: number;
+  route: number;
+  information: number;
+  experience: number;
+  overall: number;
+}
+
+export interface AIEvaluation {
+  scores: ScoreSet;
+  summary: string;
+  reasons: Record<keyof Omit<ScoreSet, "overall">, string>;
+  visitorNotes: Record<VisitorPerspective, string>;
+  createdAt: string;
+}
+
+export type CreateView = "edit" | "preview" | "result";
+
+export type CanvasSelection =
+  | { type: "artifact"; instanceId: string }
+  | { type: "panel"; id: string }
+  | null;
+
+export interface ExhibitionState {
+  museumMode: MuseumMode | null;
+  step: number;
+  view: CreateView;
+  title: string;
+  theme: string;
+  description: string;
+  selectedArtifactIds: string[];
+  placedArtifacts: PlacedArtifact[];
+  panels: ExhibitionPanel[];
+  route: string[];
+  aiEvaluation: AIEvaluation | null;
+  visitorPerspective: VisitorPerspective;
+  previewIndex: number;
+  selection: CanvasSelection;
+}
+
+export const STEPS = [
+  { id: 1, key: "venue", label: "전시관" },
+  { id: 2, key: "theme", label: "주제" },
+  { id: 3, key: "artifacts", label: "유물" },
+  { id: 4, key: "space", label: "공간" },
+  { id: 5, key: "route", label: "동선" },
+  { id: 6, key: "ai", label: "AI 평가" },
+  { id: 7, key: "complete", label: "완성" },
+] as const;
+
+export const initialExhibitionState: ExhibitionState = {
+  museumMode: null,
+  step: 1,
+  view: "edit",
+  title: "",
+  theme: "",
+  description: "",
+  selectedArtifactIds: [],
+  placedArtifacts: [],
+  panels: [],
+  route: [],
+  aiEvaluation: null,
+  visitorPerspective: "general",
+  previewIndex: 0,
+  selection: null,
+};
