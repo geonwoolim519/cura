@@ -1,42 +1,80 @@
 import { Share2 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Curi } from "@/components/Curi";
+import { ExhibitionCanvas2D } from "@/components/ExhibitionCanvas2D";
+import { museums } from "@/data/museums";
+import { kicker, page } from "@/lib/layout";
+import { rememberExhibition } from "@/lib/storage";
 import { useExhibition } from "@/store/ExhibitionContext";
 
 export function ExhibitionResult() {
   const { state, dispatch } = useExhibition();
   const navigate = useNavigate();
-  const [toast, setToast] = useState(false);
+  const [toast, setToast] = useState("");
+  const museum = state.museumMode ? museums[state.museumMode] : null;
+
+  const share = async () => {
+    const url = window.location.href;
+    try {
+      await navigator.clipboard.writeText(url);
+      setToast("전시 링크를 복사했습니다.");
+    } catch {
+      setToast("이 페이지 주소를 공유해 주세요.");
+    }
+    window.setTimeout(() => setToast(""), 1800);
+  };
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-16 text-center">
-      <p className="text-xs tracking-[0.28em] text-warm">COMPLETE</p>
-      <h2 className="mt-4 font-serif text-4xl leading-snug text-navy">
-        당신만의 전시가 완성되었습니다.
-      </h2>
-      <p className="mt-8 font-serif text-3xl text-ink">
-        {state.title || "무제 전시"}
-      </p>
-      <p className="mt-2 text-sm tracking-[0.2em] text-warm">CURATED BY YOU</p>
-      <dl className="mx-auto mt-10 grid max-w-md grid-cols-2 gap-4 text-sm">
-        <div className="border border-line bg-paper py-4">
-          유물 {state.placedArtifacts.length}개
+    <div className={page + " py-12"}>
+      <div className="grid items-start gap-10 lg:grid-cols-[1.1fr_0.9fr]">
+        <div>
+          <p className={kicker}>EXHIBITION COMPLETE</p>
+          <h2 className="mt-3 font-serif text-4xl leading-snug text-navy">
+            당신의 전시가
+            <br />
+            완성되었습니다.
+          </h2>
+          <p className="mt-6 font-serif text-3xl text-ink">{state.title || "무제 전시"}</p>
+          <p className="mt-2 text-sm tracking-[0.22em] text-warm">Curated by You</p>
+          <p className="mt-4 text-sm text-muted">
+            {museum?.name} · {state.theme}
+          </p>
+          <p className="mt-8 font-display text-6xl text-navy">
+            {state.aiEvaluation?.scores.overall ?? "–"}
+          </p>
+          <p className="text-sm text-muted">AI CURATOR SCORE</p>
         </div>
-        <div className="border border-line bg-paper py-4">
-          패널 {state.panels.length}개
+        <Curi pose="wink" className="mx-auto h-56 w-56" />
+      </div>
+
+      <div className="mt-10">
+        <ExhibitionCanvas2D interactive={false} showRoute />
+      </div>
+
+      <section className="mt-10 grid gap-4 border border-line bg-paper p-6 md:grid-cols-3">
+        <div>
+          <p className={kicker}>EXHIBITION SUMMARY</p>
+          <p className="mt-3 font-serif text-2xl text-navy">
+            유물 {state.placedArtifacts.length}점
+          </p>
+          <p className="mt-1 text-sm text-muted">
+            설명 패널 {state.panels.filter((p) => p.kind === "panel").length}개 · 동선{" "}
+            {state.route.length}단계
+          </p>
         </div>
-        <div className="border border-line bg-paper py-4">
-          관람 동선 {state.route.length}단계
-        </div>
-        <div className="border border-line bg-paper py-4">
-          AI 큐레이터 {state.aiEvaluation?.scores.overall ?? "–"}점
-        </div>
-      </dl>
-      <div className="mt-10 flex flex-wrap justify-center gap-3">
+        <p className="font-serif text-lg leading-8 text-ink md:col-span-2">
+          유물을 고르고, 공간을 구성하고, 관람객의 동선을 설계하고, AI 큐레이터의
+          시선으로 전시를 다시 바라보았습니다.
+        </p>
+      </section>
+
+      <div className="mt-8 flex flex-wrap gap-3">
         <button
           type="button"
-          className="h-11 bg-navy px-5 text-sm text-ivory"
+          className="btn btn-primary"
           onClick={() => {
+            rememberExhibition(state);
             dispatch({ type: "SET_PREVIEW_INDEX", index: 0 });
             dispatch({ type: "SET_VIEW", view: "preview" });
           }}
@@ -45,17 +83,17 @@ export function ExhibitionResult() {
         </button>
         <button
           type="button"
-          className="h-11 border border-navy px-5 text-sm text-navy"
+          className="btn btn-outline"
           onClick={() => {
             dispatch({ type: "SET_STEP", step: 4 });
             dispatch({ type: "SET_VIEW", view: "edit" });
           }}
         >
-          전시 수정
+          전시 수정하기
         </button>
         <button
           type="button"
-          className="h-11 border border-line px-5 text-sm"
+          className="btn btn-outline"
           onClick={() => {
             dispatch({ type: "RESET" });
             navigate("/");
@@ -63,21 +101,12 @@ export function ExhibitionResult() {
         >
           새 전시 만들기
         </button>
-        <button
-          type="button"
-          className="inline-flex h-11 items-center gap-2 border border-line px-5 text-sm"
-          onClick={() => {
-            setToast(true);
-            window.setTimeout(() => setToast(false), 1800);
-          }}
-        >
+        <button type="button" className="btn btn-outline" onClick={() => void share()}>
           <Share2 size={14} />
-          공유
+          전시 공유하기
         </button>
       </div>
-      {toast ? (
-        <p className="mt-6 text-sm text-muted">준비 중인 기능입니다.</p>
-      ) : null}
+      {toast ? <p className="mt-4 text-sm text-muted">{toast}</p> : null}
     </div>
   );
 }

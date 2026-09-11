@@ -1,10 +1,18 @@
 import { Link } from "react-router-dom";
 import { asset } from "@/lib/asset";
+import { page } from "@/lib/layout";
+import { cn } from "@/lib/cn";
+
+const NAV = [
+  { hash: "museums", label: "전시 만들기" },
+  { hash: "museums", label: "유물 아카이브" },
+  { hash: "my-exhibitions", label: "내 전시" },
+];
 
 export function AppHeader({ kicker }: { kicker?: string }) {
   return (
     <header className="border-b border-white/10 bg-navy text-ivory">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+      <div className={cn(page, "flex h-[72px] items-center justify-between")}>
         <Link to="/" className="flex items-center gap-3">
           <img
             src={asset("branding/logo.png")}
@@ -20,11 +28,24 @@ export function AppHeader({ kicker }: { kicker?: string }) {
             </p>
           </div>
         </Link>
+        <nav className="hidden items-center gap-8 text-[13px] tracking-wide text-ivory/75 md:flex">
+          {NAV.map((item) => (
+            <Link
+              key={item.label}
+              to={{ pathname: "/", hash: item.hash }}
+              className="hover:text-ivory"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
         {kicker ? (
-          <p className="hidden text-xs tracking-widest text-ivory/70 sm:block">
+          <p className="hidden max-w-[240px] truncate text-xs tracking-widest text-ivory/70 lg:block">
             {kicker}
           </p>
-        ) : null}
+        ) : (
+          <span className="hidden w-24 lg:block" />
+        )}
       </div>
     </header>
   );

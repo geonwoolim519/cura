@@ -16,10 +16,12 @@ import { ExhibitionPanel } from "./ExhibitionPanel";
 export function ExhibitionCanvas2D({
   interactive = true,
   showRoute = false,
+  routeEdit = false,
   highlightId,
 }: {
   interactive?: boolean;
   showRoute?: boolean;
+  routeEdit?: boolean;
   highlightId?: string;
 }) {
   const { state, dispatch } = useExhibition();
@@ -27,7 +29,9 @@ export function ExhibitionCanvas2D({
   const room = rooms[mode];
   const wrapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(1);
+  const [fit, setFit] = useState(1);
+  const [zoom, setZoom] = useState(1);
+  const scale = fit * zoom;
   const drag = useRef<{
     selection: NonNullable<CanvasSelection>;
     mode: "move" | "resize";
@@ -44,7 +48,7 @@ export function ExhibitionCanvas2D({
     if (!el) return;
     const update = () => {
       const w = el.clientWidth;
-      setScale(Math.min(1, w / CANVAS.w));
+      setFit(Math.min(1, w / CANVAS.w));
     };
     update();
     const obs = new ResizeObserver(update);
@@ -86,7 +90,7 @@ export function ExhibitionCanvas2D({
   }, [dispatch, scale]);
 
   const routePts = useMemo(() => {
-    return state.route
+    const pts = state.route
       .map((id) => state.placedArtifacts.find((p) => p.instanceId === id))
       .filter(Boolean)
       .map((p) => ({
@@ -94,7 +98,12 @@ export function ExhibitionCanvas2D({
         x: p!.x + p!.width / 2,
         y: p!.y + p!.height / 2,
       }));
-  }, [state.route, state.placedArtifacts]);
+    return [
+      { id: "entry", x: room.entrance.x + 24, y: room.entrance.y - 8 },
+      ...pts,
+      { id: "exit", x: room.exit.x + 20, y: room.exit.y - 8 },
+    ];
+  }, [state.route, state.placedArtifacts, room.entrance, room.exit]);
 
   const toCanvas = (e: DragEvent | ReactPointerEvent) => {
     const rect = canvasRef.current?.getBoundingClientRect();
@@ -120,9 +129,11 @@ export function ExhibitionCanvas2D({
             height: CANVAS.h,
             transform: `scale(${scale})`,
             transformOrigin: "top left",
-            background: room.floorColor,
+            backgroundColor: room.floorColor,
+            backgroundImage: `linear-gradient(90deg, ${room.floorAlt} 1px, transparent 1px), linear-gradient(${room.floorAlt} 1px, transparent 1px)`,
+            backgroundSize: "34px 34px",
           }}
-          className="relative museum-grid shadow-[inset_0_0_0_18px_#d7cbb6]"
+          className="relative"
           onDragOver={(e) => e.preventDefault()}
           onDrop={(e) => {
             e.preventDefault();
@@ -146,8 +157,10 @@ export function ExhibitionCanvas2D({
           }}
         >
           <div
-            className="absolute inset-0 border-[14px]"
-            style={{ borderColor: room.wallColor }}
+            className="absolute inset-0"
+            style={{
+              boxShadow: `inset 0 0 0 22px ${room.wallColor}, inset 0 0 0 28px ${room.wallInner}`,
+            }}
           />
           {room.zones.map((zone) => (
             <div
@@ -157,32 +170,37 @@ export function ExhibitionCanvas2D({
                 top: zone.y,
                 width: zone.w,
                 height: zone.h,
-                borderColor: `${room.accent}55`,
+                background:
+                  zone.kind === "pedestal"
+                    ? "linear-gradient(#d7c4a3, #c4ae86)"
+                    : zone.kind === "case"
+                      ? "rgba(255,255,255,0.35)"
+                      : room.wallInner,
+                borderColor:
+                  zone.kind === "case" ? "rgba(111,183,178,0.45)" : `${room.accent}40`,
               }}
-              className="absolute border border-dashed"
+              className="absolute border"
             >
-              <span className="absolute left-2 top-2 text-[10px] tracking-widest text-warm">
+              <span className="absolute left-2 top-2 text-[10px] tracking-[0.16em] text-warm">
                 {zone.label}
               </span>
             </div>
           ))}
-          <p className="absolute left-1/2 top-5 -translate-x-1/2 font-serif text-lg text-navy">
+          <p className="absolute left-1/2 top-6 -translate-x-1/2 text-[12px] tracking-[0.32em] text-navy/80">
             {room.name}
           </p>
           <span
             style={{ left: room.entrance.x, top: room.entrance.y }}
-            className="absolute text-[11px] tracking-widest text-navy"
+            className="absolute text-[11px] tracking-[0.22em] text-navy"
           >
-            → {room.entrance.label}
+            ENTRY →
           </span>
-          {room.exit ? (
-            <span
-              style={{ left: room.exit.x, top: room.exit.y }}
-              className="absolute text-[11px] tracking-widest text-navy"
-            >
-              {room.exit.label} →
-            </span>
-          ) : null}
+          <span
+            style={{ left: room.exit.x, top: room.exit.y }}
+            className="absolute text-[11px] tracking-[0.22em] text-navy"
+          >
+            EXIT →
+          </span>
 
           {showRoute && routePts.length > 1 ? (
             <svg className="pointer-events-none absolute inset-0 h-full w-full">
@@ -269,6 +287,10 @@ export function ExhibitionCanvas2D({
                       instanceId: item.instanceId,
                     };
                     dispatch({ type: "SELECT", selection });
+                    if (routeEdit) {
+                      dispatch({ type: "TOGGLE_ROUTE", instanceId: item.instanceId });
+                      return;
+                    }
                     if (!interactive) return;
                     drag.current = {
                       selection,
@@ -316,7 +338,25 @@ export function ExhibitionCanvas2D({
           })}
         </div>
       </div>
-      <p className="mt-2 text-[11px] text-warm">{room.note}</p>
+      <div className="mt-3 flex items-center justify-between gap-3">
+        <p className="text-[11px] text-warm">{room.note}</p>
+        <div className="flex gap-1">
+          <button
+            type="button"
+            className="h-8 w-8 border border-line text-sm"
+            onClick={() => setZoom((z) => Math.max(0.6, Number((z - 0.1).toFixed(2))))}
+          >
+            −
+          </button>
+          <button
+            type="button"
+            className="h-8 w-8 border border-line text-sm"
+            onClick={() => setZoom((z) => Math.min(1.6, Number((z + 0.1).toFixed(2))))}
+          >
+            +
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

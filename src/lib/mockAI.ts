@@ -70,9 +70,21 @@ export function evaluateExhibition(state: ExhibitionState): AIEvaluation {
   if (categories.size >= 2) composition += 6;
 
   const xs = placed.map((p) => p.x);
-  const spread =
-    xs.length > 1 ? Math.max(...xs) - Math.min(...xs) : 0;
+  const spread = xs.length > 1 ? Math.max(...xs) - Math.min(...xs) : 0;
   if (spread > 280) composition += 4;
+  const ys = placed.map((p) => p.y);
+  const spreadY = ys.length > 1 ? Math.max(...ys) - Math.min(...ys) : 0;
+  if (spreadY < 80 && placed.length >= 3) composition -= 6;
+  if (spread < 180 && placed.length >= 4) composition -= 5;
+
+  let clustered = 0;
+  for (let i = 0; i < placed.length; i += 1) {
+    for (let j = i + 1; j < placed.length; j += 1) {
+      const dist = Math.hypot(placed[i].x - placed[j].x, placed[i].y - placed[j].y);
+      if (dist < 90) clustered += 1;
+    }
+  }
+  if (clustered > 0) composition -= Math.min(10, clustered * 3);
 
   let routeScore = 58;
   const routeIds = state.route.filter((id) =>
@@ -133,7 +145,17 @@ export function evaluateExhibition(state: ExhibitionState): AIEvaluation {
   );
 
   const periodLabel =
-    mode === "gongju" ? "백제" : mode === "gimhae" ? "가야" : "한국사";
+    mode === "gongju"
+      ? "백제"
+      : mode === "gimhae"
+        ? "가야"
+        : mode === "gyeongju"
+          ? "신라"
+          : mode === "jeju"
+            ? "제주"
+            : mode === "met"
+              ? "세계 미술"
+              : "한국사";
   const names = placed.slice(0, 3).map((p) => p.artifact!.name);
 
   const reasons: AIEvaluation["reasons"] = {
@@ -149,8 +171,12 @@ export function evaluateExhibition(state: ExhibitionState): AIEvaluation {
           : `유물 ${placed.length}점과 패널 ${state.panels.length}점이 공간을 나누고 있습니다. 벽면과 중앙의 역할이 나뉘면 관람객이 전시 구조를 더 쉽게 읽을 수 있습니다.`,
     route:
       routeIds.length < Math.max(2, placed.length)
-        ? "관람 동선이 아직 모든 유물을 감싸지 않습니다. 입구에서 핵심 유물로 이어지는 순서를 정하면 관람객이 길을 잃지 않습니다."
-        : "동선은 대체로 연결되어 있습니다. 다만 유물 간 시대적 흐름이 한눈에 들어오도록, 제작 기술 → 대표 유물 → 사용 맥락 순을 고려해 볼 수 있습니다.",
+        ? "관람 동선이 아직 모든 전시품을 감싸지 않습니다. 입구에서 핵심 유물로 이어지는 순서를 정하면 관람객이 길을 잃지 않습니다."
+        : clustered > 0
+          ? "동선은 연결되어 있으나 유물이 한곳에 모여 있습니다. 벽면과 중앙을 나눠 쓰면 시선이 한곳에 머물지 않습니다."
+          : spread < 180 && placed.length >= 4
+            ? "동선이 짧고 공간이 충분히 쓰이지 않습니다. 입구에서 출구까지 전시품 사이 거리를 조금 더 벌려 보세요."
+            : "동선은 대체로 연결되어 있습니다. 다만 유물 간 시대적 흐름이 한눈에 들어오도록, 도입 → 핵심 → 여운 순을 고려해 볼 수 있습니다.",
     information:
       state.panels.length === 0
         ? "유물 자체는 강하지만, 공간에 설명 패널이 없어 정보가 유물 카드에만 머무를 수 있습니다. 주제 문장을 짧은 패널로 벽에 두면 전달력이 높아집니다."
@@ -169,9 +195,11 @@ export function evaluateExhibition(state: ExhibitionState): AIEvaluation {
     youth:
       "유물 설명이 다소 길어 처음 보는 관람객에게는 어려울 수 있습니다. 한 문장 질문(“이 금장식은 누가 썼을까요?”)을 패널에 두면 청소년도 전시에 머무를 수 있습니다.",
     foreign:
-      mode === "free"
+      mode === "met"
+        ? "작품 제목은 이해되지만, 한국어만 있으면 외국인 관람객의 접근성이 떨어질 수 있습니다. 핵심 작품명 옆에 짧은 영문 설명을 두면 도움이 됩니다."
+        : mode === "free"
         ? "외국인 관람객에게는 시대 이름만으로는 맥락이 부족할 수 있습니다. 전시 초반에 한반도 연표와 지역 이름을 함께 적으면 이해하기 쉬워질 수 있습니다."
-        : `${periodLabel}에 대한 기본적인 설명을 전시 초반에 추가하면 이해하기 쉬워질 수 있습니다. 왕, 철, 무덤처럼 핵심 단어를 먼저 정의하는 방식이 도움이 됩니다.`,
+        : `${periodLabel}에 대한 기본적인 설명을 전시 초반에 추가하면 이해하기 쉬워질 수 있습니다. 전시 제목은 이해하기 쉽지만 영어 설명이 제공되지 않아 접근성이 떨어질 수 있습니다.`,
     specialist:
       "역사 전공자에게는 출토지와 소장처, 제작 기법의 근거가 더 궁금해질 수 있습니다. 유물 옆에 출토 맥락을 한 줄씩 보강하면 전문 관람의 밀도가 높아집니다.",
   };

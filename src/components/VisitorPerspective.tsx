@@ -15,9 +15,9 @@ export function VisitorPerspective() {
 
   return (
     <section className="mt-8 border border-line bg-paper p-5">
-      <p className="text-xs tracking-[0.22em] text-warm">VISITOR PERSPECTIVE</p>
+      <p className="text-[11px] tracking-[0.22em] text-warm">VISITOR PERSPECTIVE</p>
       <h3 className="mt-2 font-serif text-2xl text-navy">
-        관람객은 이 전시를 어떻게 경험할까요?
+        누구의 시선으로 전시를 살펴볼까요?
       </h3>
       <div className="mt-4 flex flex-wrap gap-2">
         {OPTIONS.map((opt) => (

@@ -1,4 +1,6 @@
 import { getArtifact } from "@/data/artifacts";
+import { objectLabel } from "@/data/museums";
+import { kicker } from "@/lib/layout";
 import { useExhibition } from "@/store/ExhibitionContext";
 import { HeritageImage } from "./HeritageImage";
 import { ExhibitionCanvas2D } from "./ExhibitionCanvas2D";
@@ -6,15 +8,16 @@ import { PropertyPanel } from "./PropertyPanel";
 
 export function ExhibitionEditor() {
   const { state, dispatch } = useExhibition();
+  const noun = objectLabel(state.museumMode);
   const unplaced = state.selectedArtifactIds.filter(
     (id) => !state.placedArtifacts.some((p) => p.artifactId === id),
   );
 
   return (
-    <div className="grid gap-4 px-4 py-6 lg:grid-cols-[220px_1fr_280px]">
-      <aside className="border border-line bg-paper p-3">
-        <p className="text-xs tracking-[0.2em] text-warm">LIBRARY</p>
-        <p className="mt-1 text-sm text-muted">유물을 공간으로 끌어 놓으세요.</p>
+    <div className="grid gap-4 px-5 py-6 lg:grid-cols-[220px_1fr_280px] xl:px-8">
+      <aside className="rounded-sm border border-line bg-paper p-3">
+        <p className={kicker}>LIBRARY</p>
+        <p className="mt-2 text-sm text-muted">{noun}을 공간으로 끌어 놓으세요.</p>
         <ul className="mt-3 space-y-2">
           {state.selectedArtifactIds.map((id) => {
             const artifact = getArtifact(id);
@@ -35,9 +38,7 @@ export function ExhibitionEditor() {
                 </div>
                 <div>
                   <p className="text-xs leading-4">{artifact.name}</p>
-                  <p className="text-[10px] text-warm">
-                    {placed ? "배치됨" : "대기"}
-                  </p>
+                  <p className="text-[10px] text-warm">{placed ? "배치됨" : "대기"}</p>
                 </div>
               </li>
             );
@@ -45,38 +46,48 @@ export function ExhibitionEditor() {
         </ul>
       </aside>
       <section>
-        <div className="mb-3 flex flex-wrap gap-2">
-          <button
-            type="button"
-            className="h-9 border border-line px-3 text-xs"
-            onClick={() => {
-              const id = unplaced[0];
-              if (!id) return;
-              const index = state.placedArtifacts.length;
-              dispatch({
-                type: "PLACE_ARTIFACT",
-                artifactId: id,
-                x: 160 + (index % 4) * 180,
-                y: 140 + Math.floor(index / 4) * 170,
-              });
-            }}
-          >
-            + 유물
-          </button>
-          <button
-            type="button"
-            className="h-9 border border-line px-3 text-xs"
-            onClick={() => dispatch({ type: "ADD_PANEL", kind: "panel" })}
-          >
-            + 설명 패널
-          </button>
-          <button
-            type="button"
-            className="h-9 border border-line px-3 text-xs"
-            onClick={() => dispatch({ type: "ADD_PANEL", kind: "title" })}
-          >
-            + 제목
-          </button>
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+          <h2 className="font-serif text-2xl text-navy">전시공간을 구성해 보세요.</h2>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              className="h-9 border border-line px-3 text-xs"
+              onClick={() => {
+                const id = unplaced[0];
+                if (!id) return;
+                const index = state.placedArtifacts.length;
+                dispatch({
+                  type: "PLACE_ARTIFACT",
+                  artifactId: id,
+                  x: 160 + (index % 4) * 180,
+                  y: 140 + Math.floor(index / 4) * 170,
+                });
+              }}
+            >
+              + {noun}
+            </button>
+            <button
+              type="button"
+              className="h-9 border border-line px-3 text-xs"
+              onClick={() => dispatch({ type: "ADD_PANEL", kind: "panel" })}
+            >
+              + 설명 패널
+            </button>
+            <button
+              type="button"
+              className="h-9 border border-line px-3 text-xs"
+              onClick={() => dispatch({ type: "ADD_PANEL", kind: "title" })}
+            >
+              + 제목
+            </button>
+            <button
+              type="button"
+              className="h-9 border border-line px-3 text-xs"
+              onClick={() => dispatch({ type: "ADD_PANEL", kind: "pedestal" })}
+            >
+              + 전시대
+            </button>
+          </div>
         </div>
         <ExhibitionCanvas2D interactive showRoute={false} />
       </section>

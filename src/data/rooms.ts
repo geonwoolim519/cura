@@ -9,6 +9,7 @@ export interface RoomZone {
   y: number;
   w: number;
   h: number;
+  kind: "wall" | "pedestal" | "case";
 }
 
 export interface RoomPlan {
@@ -16,58 +17,125 @@ export interface RoomPlan {
   name: string;
   note: string;
   wallColor: string;
+  wallInner: string;
   floorColor: string;
+  floorAlt: string;
   accent: string;
+  light: string;
   zones: RoomZone[];
   entrance: { x: number; y: number; label: string };
-  exit?: { x: number; y: number; label: string };
+  exit: { x: number; y: number; label: string };
 }
 
 export const rooms: Record<MuseumMode, RoomPlan> = {
   gongju: {
     id: "gongju",
-    name: "전시실 A",
-    note: "웅진 백제 모티프의 단순화된 2D 전시실입니다. 실제 건축의 복제가 아닙니다.",
-    wallColor: "#d8c7a8",
-    floorColor: "#efe6d4",
+    name: "EXHIBITION ROOM A",
+    note: "CURA의 가상 2D 전시 공간입니다. 실제 박물관의 평면도와는 다릅니다.",
+    wallColor: "#cbb896",
+    wallInner: "#e8d7b8",
+    floorColor: "#efe4cf",
+    floorAlt: "#e4d4b8",
     accent: "#8b5a3c",
+    light: "rgba(196, 164, 110, 0.22)",
     zones: [
-      { id: "a", label: "벽면 전시 A", x: 48, y: 54, w: 320, h: 210 },
-      { id: "b", label: "벽면 전시 B", x: 730, y: 54, w: 320, h: 210 },
-      { id: "c", label: "중앙 좌대", x: 390, y: 250, w: 320, h: 180 },
+      { id: "a", label: "벽면 전시 A", x: 48, y: 58, w: 300, h: 200, kind: "wall" },
+      { id: "b", label: "벽면 전시 B", x: 752, y: 58, w: 300, h: 200, kind: "wall" },
+      { id: "c", label: "중앙 전시대", x: 390, y: 250, w: 320, h: 168, kind: "pedestal" },
     ],
-    entrance: { x: 70, y: 575, label: "입구" },
+    entrance: { x: 48, y: 575, label: "ENTRY" },
+    exit: { x: 980, y: 575, label: "EXIT" },
   },
   gimhae: {
     id: "gimhae",
-    name: "전시실 A",
-    note: "가야 상설전시의 흐름을 단순화한 2D 전시실입니다. 실제 건축의 복제가 아닙니다.",
-    wallColor: "#cfd6dc",
-    floorColor: "#e8ece9",
+    name: "EXHIBITION ROOM A",
+    note: "CURA의 가상 2D 전시 공간입니다. 실제 박물관의 평면도와는 다릅니다.",
+    wallColor: "#9aa3aa",
+    wallInner: "#c5ccd1",
+    floorColor: "#dfe3e1",
+    floorAlt: "#d0d6d3",
     accent: "#3d5a4c",
+    light: "rgba(90, 120, 110, 0.2)",
     zones: [
-      { id: "a", label: "①", x: 70, y: 70, w: 280, h: 200 },
-      { id: "b", label: "②", x: 410, y: 70, w: 280, h: 200 },
-      { id: "c", label: "③", x: 750, y: 70, w: 280, h: 200 },
-      { id: "d", label: "④", x: 180, y: 320, w: 300, h: 190 },
-      { id: "e", label: "⑤", x: 560, y: 320, w: 300, h: 190 },
+      { id: "a", label: "① 철기", x: 56, y: 64, w: 250, h: 188, kind: "wall" },
+      { id: "b", label: "② 토기", x: 425, y: 64, w: 250, h: 188, kind: "wall" },
+      { id: "c", label: "③ 교류", x: 794, y: 64, w: 250, h: 188, kind: "wall" },
+      { id: "d", label: "중앙 전시대", x: 360, y: 330, w: 380, h: 150, kind: "pedestal" },
     ],
-    entrance: { x: 70, y: 575, label: "입구" },
-    exit: { x: 1000, y: 575, label: "출구" },
+    entrance: { x: 48, y: 575, label: "ENTRY" },
+    exit: { x: 980, y: 575, label: "EXIT" },
+  },
+  gyeongju: {
+    id: "gyeongju",
+    name: "EXHIBITION ROOM A",
+    note: "CURA의 가상 2D 전시 공간입니다. 실제 박물관의 평면도와는 다릅니다.",
+    wallColor: "#d9c7a0",
+    wallInner: "#f0e4c8",
+    floorColor: "#f4ead6",
+    floorAlt: "#ead9b8",
+    accent: "#b0892e",
+    light: "rgba(201, 162, 70, 0.24)",
+    zones: [
+      { id: "a", label: "서측 벽면", x: 40, y: 70, w: 210, h: 430, kind: "wall" },
+      { id: "b", label: "중앙 전시대", x: 330, y: 180, w: 440, h: 230, kind: "pedestal" },
+      { id: "c", label: "동측 벽면", x: 850, y: 70, w: 210, h: 430, kind: "wall" },
+    ],
+    entrance: { x: 48, y: 575, label: "ENTRY" },
+    exit: { x: 980, y: 575, label: "EXIT" },
+  },
+  jeju: {
+    id: "jeju",
+    name: "EXHIBITION ROOM A",
+    note: "CURA의 가상 2D 전시 공간입니다. 실제 박물관의 평면도와는 다릅니다.",
+    wallColor: "#d7e3ea",
+    wallInner: "#eef5f8",
+    floorColor: "#f3f6f4",
+    floorAlt: "#e4ece6",
+    accent: "#3d7ea6",
+    light: "rgba(120, 180, 200, 0.2)",
+    zones: [
+      { id: "a", label: "열린 벽면", x: 70, y: 70, w: 420, h: 180, kind: "wall" },
+      { id: "b", label: "쇼케이스", x: 620, y: 90, w: 400, h: 160, kind: "case" },
+      { id: "c", label: "중앙 좌대", x: 280, y: 320, w: 540, h: 170, kind: "pedestal" },
+    ],
+    entrance: { x: 48, y: 575, label: "ENTRY" },
+    exit: { x: 980, y: 575, label: "EXIT" },
+  },
+  met: {
+    id: "met",
+    name: "GALLERY A",
+    note: "CURA의 가상 2D 전시 공간입니다. 실제 박물관의 평면도와는 다릅니다.",
+    wallColor: "#d8d2c6",
+    wallInner: "#f4efe6",
+    floorColor: "#ebe4d6",
+    floorAlt: "#ddd4c4",
+    accent: "#1d3557",
+    light: "rgba(80, 90, 70, 0.16)",
+    zones: [
+      { id: "a", label: "회화 벽면", x: 50, y: 58, w: 1000, h: 120, kind: "wall" },
+      { id: "b", label: "조각 좌대", x: 160, y: 250, w: 220, h: 180, kind: "pedestal" },
+      { id: "c", label: "중앙 갤러리", x: 440, y: 240, w: 220, h: 200, kind: "pedestal" },
+      { id: "d", label: "고전 좌대", x: 720, y: 250, w: 220, h: 180, kind: "pedestal" },
+    ],
+    entrance: { x: 48, y: 575, label: "ENTRY" },
+    exit: { x: 980, y: 575, label: "EXIT" },
   },
   free: {
     id: "free",
-    name: "열린 전시실",
-    note: "백색 갤러리를 단순화한 2D 전시실입니다.",
-    wallColor: "#ece8df",
-    floorColor: "#f7f4ee",
+    name: "OPEN GALLERY",
+    note: "CURA의 가상 2D 전시 공간입니다. 실제 박물관의 평면도와는 다릅니다.",
+    wallColor: "#ddd6c8",
+    wallInner: "#f7f4ee",
+    floorColor: "#f4efe6",
+    floorAlt: "#e8e1d4",
     accent: "#0b2545",
+    light: "rgba(11, 37, 69, 0.12)",
     zones: [
-      { id: "a", label: "서측 벽면", x: 50, y: 60, w: 240, h: 480 },
-      { id: "b", label: "중앙", x: 360, y: 150, w: 380, h: 280 },
-      { id: "c", label: "동측 벽면", x: 810, y: 60, w: 240, h: 480 },
+      { id: "a", label: "서측 벽면", x: 40, y: 60, w: 220, h: 470, kind: "wall" },
+      { id: "b", label: "중앙", x: 340, y: 160, w: 420, h: 270, kind: "pedestal" },
+      { id: "c", label: "동측 벽면", x: 840, y: 60, w: 220, h: 470, kind: "wall" },
     ],
-    entrance: { x: 70, y: 575, label: "입구" },
-    exit: { x: 1000, y: 575, label: "출구" },
+    entrance: { x: 48, y: 575, label: "ENTRY" },
+    exit: { x: 980, y: 575, label: "EXIT" },
   },
 };

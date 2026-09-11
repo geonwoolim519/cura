@@ -1,4 +1,10 @@
-export type MuseumMode = "gongju" | "gimhae" | "free";
+export type MuseumMode =
+  | "gongju"
+  | "gimhae"
+  | "gyeongju"
+  | "jeju"
+  | "met"
+  | "free";
 
 export type VisitorPerspective =
   | "general"
@@ -13,6 +19,7 @@ export interface Artifact {
   period: string;
   category: string;
   material: string;
+  region: string;
   description: string;
   keywords: string[];
   image: string;
@@ -21,6 +28,8 @@ export interface Artifact {
   sourceUrl: string;
   modes: MuseumMode[];
 }
+
+export type DisplayStyle = "pedestal" | "wall" | "case";
 
 export interface PlacedArtifact {
   instanceId: string;
@@ -31,9 +40,10 @@ export interface PlacedArtifact {
   height: number;
   rotation: number;
   displayOrder: number;
+  displayStyle: DisplayStyle;
 }
 
-export type PanelKind = "panel" | "title";
+export type PanelKind = "panel" | "title" | "pedestal";
 
 export interface ExhibitionPanel {
   id: string;
@@ -85,6 +95,18 @@ export interface ExhibitionState {
   visitorPerspective: VisitorPerspective;
   previewIndex: number;
   selection: CanvasSelection;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ExhibitionSummary {
+  id: string;
+  museumMode: MuseumMode;
+  title: string;
+  theme: string;
+  score: number | null;
+  artifactCount: number;
+  updatedAt: string;
 }
 
 export const STEPS = [
@@ -112,4 +134,6 @@ export const initialExhibitionState: ExhibitionState = {
   visitorPerspective: "general",
   previewIndex: 0,
   selection: null,
+  createdAt: "",
+  updatedAt: "",
 };

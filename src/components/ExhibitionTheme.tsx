@@ -1,101 +1,138 @@
-import { themePresets } from "@/data/museums";
+import { useState } from "react";
+import { museums, objectLabel, themePresets } from "@/data/museums";
+import { kicker, page } from "@/lib/layout";
+import { cn } from "@/lib/cn";
 import { useExhibition } from "@/store/ExhibitionContext";
 import type { MuseumMode } from "@/types/exhibition";
+import { HeritageImage } from "./HeritageImage";
 
 export function ExhibitionTheme() {
   const { state, dispatch } = useExhibition();
   const mode = (state.museumMode ?? "free") as MuseumMode;
+  const museum = museums[mode];
   const presets = themePresets[mode];
+  const [customOpen, setCustomOpen] = useState(
+    Boolean(state.title) && !presets.some((p) => p.title === state.title),
+  );
+  const noun = objectLabel(mode);
 
   return (
-    <div className="mx-auto grid max-w-5xl gap-10 px-6 py-10 lg:grid-cols-[1.1fr_0.9fr]">
+    <div className={page + " grid gap-8 py-10 lg:grid-cols-[280px_1fr]"}>
+      <aside className="h-fit overflow-hidden rounded-sm border border-line bg-paper">
+        <div className="h-44 bg-mist">
+          <HeritageImage src={museum.image} alt={museum.name} />
+        </div>
+        <div className="p-5">
+          <p className={kicker}>{museum.periodLabel}</p>
+          <h2 className="mt-2 font-serif text-2xl text-navy">{museum.name}</h2>
+          <p className="mt-3 text-sm leading-6 text-muted">{museum.interiorText}</p>
+        </div>
+      </aside>
+
       <section>
-        <p className="text-xs tracking-[0.28em] text-warm">THEME</p>
-        <h2 className="mt-2 font-serif text-3xl text-navy">
-          전시의 질문을 먼저 정해 보세요
+        <p className={kicker}>THEME</p>
+        <h2 className="mt-2 font-serif text-3xl text-navy md:text-4xl">
+          전시 주제를 정해 볼까요?
         </h2>
         <p className="mt-3 text-sm leading-7 text-muted">
-          제목과 주제, 설명이 있어야 유물 선택과 AI 평가가 같은 방향을 봅니다.
+          추천 주제 가운데 고르거나, 직접 질문을 만들어 {noun} 선택과 AI 평가가
+          같은 방향을 보게 하세요.
         </p>
-        <div className="mt-8 space-y-5">
-          <label className="block">
-            <span className="text-xs tracking-widest text-warm">전시 제목</span>
-            <input
-              value={state.title}
-              onChange={(e) =>
-                dispatch({
-                  type: "SET_THEME",
-                  title: e.target.value,
-                  theme: state.theme,
-                  description: state.description,
-                })
-              }
-              placeholder="예: 백제의 금속문화"
-              className="mt-2 h-12 w-full border border-line bg-paper px-4 outline-none focus:border-navy"
-            />
-          </label>
-          <label className="block">
-            <span className="text-xs tracking-widest text-warm">전시 주제</span>
-            <input
-              value={state.theme}
-              onChange={(e) =>
-                dispatch({
-                  type: "SET_THEME",
-                  title: state.title,
-                  theme: e.target.value,
-                  description: state.description,
-                })
-              }
-              placeholder="예: 금속은 백제 왕실의 권위를 어떻게 보여 주었을까?"
-              className="mt-2 h-12 w-full border border-line bg-paper px-4 outline-none focus:border-navy"
-            />
-          </label>
-          <label className="block">
-            <span className="text-xs tracking-widest text-warm">전시 설명</span>
-            <textarea
-              value={state.description}
-              onChange={(e) =>
-                dispatch({
-                  type: "SET_THEME",
-                  title: state.title,
-                  theme: state.theme,
-                  description: e.target.value,
-                })
-              }
-              rows={5}
-              placeholder="관람객에게 전하고 싶은 이야기를 적어 주세요."
-              className="mt-2 w-full border border-line bg-paper px-4 py-3 outline-none focus:border-navy"
-            />
-          </label>
-        </div>
-      </section>
-      <aside className="border border-line bg-paper p-6">
-        <p className="text-xs tracking-[0.2em] text-warm">SUGGESTED THEMES</p>
-        <ul className="mt-4 space-y-3">
-          {presets.map((preset) => (
-            <li key={preset.title}>
+        <div className="mt-8 grid gap-4 md:grid-cols-3">
+          {presets.map((preset) => {
+            const active = state.title === preset.title;
+            return (
               <button
+                key={preset.title}
                 type="button"
-                onClick={() =>
+                onClick={() => {
+                  setCustomOpen(false);
                   dispatch({
                     type: "SET_THEME",
                     title: preset.title,
                     theme: preset.theme,
                     description: preset.description,
+                  });
+                }}
+                className={cn(
+                  "overflow-hidden rounded-sm border bg-paper text-left",
+                  active ? "border-navy" : "border-line hover:border-navy/50",
+                )}
+              >
+                <div className="h-36 bg-mist">
+                  <HeritageImage src={preset.image} alt={preset.title} />
+                </div>
+                <div className="p-4">
+                  {active ? (
+                    <p className="text-[10px] tracking-[0.2em] text-navy">선택됨</p>
+                  ) : null}
+                  <h3 className="font-serif text-xl text-navy">{preset.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-muted">
+                    {preset.description}
+                  </p>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+        <button
+          type="button"
+          onClick={() => setCustomOpen(true)}
+          className="btn btn-outline mt-6"
+        >
+          + 직접 주제 만들기
+        </button>
+        {customOpen ? (
+          <div className="mt-6 grid gap-4 border border-line bg-paper p-5 md:grid-cols-2">
+            <label className="block md:col-span-2">
+              <span className="text-xs tracking-widest text-warm">전시 제목</span>
+              <input
+                value={state.title}
+                onChange={(e) =>
+                  dispatch({
+                    type: "SET_THEME",
+                    title: e.target.value,
+                    theme: state.theme,
+                    description: state.description,
                   })
                 }
-                className="w-full border border-line px-4 py-4 text-left hover:border-navy hover:bg-ivory"
-              >
-                <p className="font-serif text-lg text-navy">{preset.title}</p>
-                <p className="mt-1 text-sm leading-6 text-muted">{preset.theme}</p>
-              </button>
-            </li>
-          ))}
-        </ul>
-        <p className="mt-4 text-xs leading-5 text-warm">
-          예시를 고른 뒤에도 문장을 직접 고칠 수 있습니다.
-        </p>
-      </aside>
+                className="mt-2 h-12 w-full rounded-sm border border-line bg-ivory px-4 outline-none focus:border-navy"
+              />
+            </label>
+            <label className="block md:col-span-2">
+              <span className="text-xs tracking-widest text-warm">전시 주제</span>
+              <input
+                value={state.theme}
+                onChange={(e) =>
+                  dispatch({
+                    type: "SET_THEME",
+                    title: state.title,
+                    theme: e.target.value,
+                    description: state.description,
+                  })
+                }
+                className="mt-2 h-12 w-full rounded-sm border border-line bg-ivory px-4 outline-none focus:border-navy"
+              />
+            </label>
+            <label className="block md:col-span-2">
+              <span className="text-xs tracking-widest text-warm">전시 설명</span>
+              <textarea
+                value={state.description}
+                onChange={(e) =>
+                  dispatch({
+                    type: "SET_THEME",
+                    title: state.title,
+                    theme: state.theme,
+                    description: e.target.value,
+                  })
+                }
+                rows={4}
+                className="mt-2 w-full rounded-sm border border-line bg-ivory px-4 py-3 outline-none focus:border-navy"
+              />
+            </label>
+          </div>
+        ) : null}
+      </section>
     </div>
   );
 }

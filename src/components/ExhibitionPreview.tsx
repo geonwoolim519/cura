@@ -43,7 +43,7 @@ export function ExhibitionPreview() {
         </h2>
         <p className="mt-2 text-sm text-muted">{state.theme}</p>
       </div>
-      <div className="mx-auto mt-8 max-w-5xl">
+      <div className="mx-auto mt-8 max-w-[1480px] px-5 xl:px-8">
         <ExhibitionCanvas2D
           interactive={false}
           showRoute

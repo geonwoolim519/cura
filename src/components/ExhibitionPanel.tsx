@@ -13,6 +13,23 @@ export function ExhibitionPanel({
   interactive: boolean;
   onPointerDown: (e: ReactPointerEvent) => void;
 }) {
+  if (panel.kind === "pedestal") {
+    return (
+      <div
+        data-canvas-item="panel"
+        style={{ left: panel.x, top: panel.y, width: panel.width, height: panel.height }}
+        className={cn(
+          "absolute bg-[#cbb896] shadow-[inset_0_8px_0_#b89d72]",
+          selected && "ring-1 ring-navy",
+          interactive ? "cursor-grab" : "cursor-default",
+        )}
+        onPointerDown={onPointerDown}
+      >
+        <p className="px-2 py-1 text-[10px] tracking-widest text-navy/70">{panel.title}</p>
+      </div>
+    );
+  }
+
   return (
     <div
       data-canvas-item="panel"

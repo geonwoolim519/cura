@@ -63,16 +63,18 @@ export function ExhibitionCreate() {
     <div className="min-h-screen bg-ivory pb-32">
       <AppHeader kicker={museum.name} />
       <ProgressBar step={step} />
-      {state.view === "edit" ? (
-        <div className="border-b border-line bg-paper px-6 py-6">
-          <div className="mx-auto max-w-6xl">
-            <p className="text-xs tracking-[0.28em] text-teal-deep">
-              {museum.periodLabel}
-            </p>
-            <h1 className="mt-2 font-serif text-3xl text-navy">{museum.name}</h1>
-            <p className="mt-2 whitespace-pre-line text-sm leading-7 text-muted">
-              {museum.interiorText}
-            </p>
+      {state.view === "edit" && state.step !== 4 && state.step !== 5 ? (
+        <div className="border-b border-line bg-paper/80">
+          <div className="mx-auto flex max-w-[1480px] items-end justify-between px-5 py-5 xl:px-8">
+            <div>
+              <p className="text-[11px] tracking-[0.28em] text-warm">
+                {museum.periodLabel}
+              </p>
+              <h1 className="mt-1 font-serif text-2xl text-navy md:text-3xl">
+                {museum.name}
+              </h1>
+            </div>
+            <p className="hidden text-xs text-warm md:block">자동 저장됨</p>
           </div>
         </div>
       ) : null}
@@ -87,11 +89,11 @@ export function ExhibitionCreate() {
 
       {state.view === "edit" ? (
         <div className="fixed bottom-0 left-0 right-0 z-20 border-t border-line bg-paper/95">
-          <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
+          <div className="mx-auto flex max-w-[1480px] items-center justify-between px-5 py-3 xl:px-8">
             <button
               type="button"
               onClick={goPrev}
-              className="h-10 px-4 text-sm text-muted"
+              className="btn btn-ghost"
             >
               ← 이전
             </button>
@@ -102,7 +104,7 @@ export function ExhibitionCreate() {
               <button
                 type="button"
                 onClick={goNext}
-                className="h-10 bg-navy px-5 text-sm text-ivory"
+                className="btn btn-primary"
               >
                 {state.step === 6 ? "전시 보기" : "다음 →"}
               </button>

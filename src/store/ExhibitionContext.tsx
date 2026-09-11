@@ -9,11 +9,17 @@ import {
   type ReactNode,
 } from "react";
 import { evaluateExhibition } from "@/lib/mockAI";
-import { clearExhibition, loadExhibition, saveExhibition } from "@/lib/storage";
+import {
+  clearExhibition,
+  loadExhibition,
+  rememberExhibition,
+  saveExhibition,
+} from "@/lib/storage";
 import { uid } from "@/lib/wiki";
 import type {
   CanvasSelection,
   CreateView,
+  DisplayStyle,
   ExhibitionPanel,
   ExhibitionState,
   MuseumMode,
@@ -54,6 +60,12 @@ type Action =
   | { type: "UPDATE_PANEL"; id: string; title: string; body: string }
   | { type: "SET_ROUTE"; route: string[] }
   | { type: "TOGGLE_ROUTE"; instanceId: string }
+  | { type: "ROTATE_ITEM"; instanceId: string; rotation: number }
+  | {
+      type: "SET_DISPLAY";
+      instanceId: string;
+      displayStyle: DisplayStyle;
+    }
   | { type: "EVALUATE" }
   | { type: "SET_VISITOR"; visitor: VisitorPerspective }
   | { type: "SET_PREVIEW_INDEX"; index: number };
@@ -71,6 +83,7 @@ function reducer(state: ExhibitionState, action: Action): ExhibitionState {
         museumMode: action.mode,
         step: 2,
         view: "edit",
+        createdAt: new Date().toISOString(),
       };
     case "SET_STEP":
       return {
@@ -138,6 +151,7 @@ function reducer(state: ExhibitionState, action: Action): ExhibitionState {
             height: 132,
             rotation: 0,
             displayOrder: state.placedArtifacts.length + 1,
+            displayStyle: "pedestal",
           },
         ],
         route: [...state.route, instanceId],
@@ -212,15 +226,17 @@ function reducer(state: ExhibitionState, action: Action): ExhibitionState {
       const panel: ExhibitionPanel = {
         id: uid(),
         kind: action.kind,
-        title: action.kind === "title" ? state.title || "전시 제목" : "설명 패널",
+        title: action.kind === "title" ? state.title || "전시 제목" : action.kind === "pedestal" ? "전시대" : "설명 패널",
         body:
           action.kind === "title"
             ? state.theme || "주제를 입력하세요"
-            : "관람객에게 전하고 싶은 설명을 적어 보세요.",
-        x: action.kind === "title" ? 400 : 160,
-        y: action.kind === "title" ? 48 : 200,
-        width: action.kind === "title" ? 320 : 240,
-        height: action.kind === "title" ? 88 : 150,
+            : action.kind === "pedestal"
+              ? "유물을 올려 두는 전시대"
+              : "관람객에게 전하고 싶은 설명을 적어 보세요.",
+        x: action.kind === "title" ? 400 : action.kind === "pedestal" ? 360 : 160,
+        y: action.kind === "title" ? 48 : action.kind === "pedestal" ? 300 : 200,
+        width: action.kind === "title" ? 320 : action.kind === "pedestal" ? 220 : 240,
+        height: action.kind === "title" ? 88 : action.kind === "pedestal" ? 70 : 150,
       };
       return {
         ...state,
@@ -248,8 +264,29 @@ function reducer(state: ExhibitionState, action: Action): ExhibitionState {
           : [...state.route, action.instanceId],
       };
     }
-    case "EVALUATE":
-      return { ...state, aiEvaluation: evaluateExhibition(state) };
+    case "ROTATE_ITEM":
+      return {
+        ...state,
+        placedArtifacts: state.placedArtifacts.map((item) =>
+          item.instanceId === action.instanceId
+            ? { ...item, rotation: action.rotation }
+            : item,
+        ),
+      };
+    case "SET_DISPLAY":
+      return {
+        ...state,
+        placedArtifacts: state.placedArtifacts.map((item) =>
+          item.instanceId === action.instanceId
+            ? { ...item, displayStyle: action.displayStyle }
+            : item,
+        ),
+      };
+    case "EVALUATE": {
+      const next = { ...state, aiEvaluation: evaluateExhibition(state) };
+      rememberExhibition(next);
+      return next;
+    }
     case "SET_VISITOR":
       return { ...state, visitorPerspective: action.visitor };
     case "SET_PREVIEW_INDEX":
@@ -275,6 +312,8 @@ function loadEmpty(): ExhibitionState {
     visitorPerspective: "general",
     previewIndex: 0,
     selection: null,
+    createdAt: "",
+    updatedAt: "",
   };
 }
 
