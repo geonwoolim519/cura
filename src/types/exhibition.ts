@@ -2,6 +2,7 @@ export type MuseumMode =
   | "gongju"
   | "gimhae"
   | "gyeongju"
+  | "chuncheon"
   | "jeju"
   | "met"
   | "free";
@@ -22,6 +23,8 @@ export interface Artifact {
   region: string;
   description: string;
   keywords: string[];
+  themes?: string[];
+  credit?: string;
   image: string;
   imageFile: string;
   source: string;

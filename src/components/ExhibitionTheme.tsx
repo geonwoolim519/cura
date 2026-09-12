@@ -67,6 +67,7 @@ export function ExhibitionTheme() {
                     <p className="text-[10px] tracking-[0.2em] text-navy">선택됨</p>
                   ) : null}
                   <h3 className="font-serif text-xl text-navy">{preset.title}</h3>
+                  <p className="mt-1 text-[13px] leading-5 text-navy/70">{preset.theme}</p>
                   <p className="mt-2 text-sm leading-6 text-muted">
                     {preset.description}
                   </p>

@@ -21,6 +21,9 @@ npm run dev
 
 - 국립공주박물관 (백제)
 - 국립김해박물관 (가야)
+- 국립경주박물관 (신라)
+- 국립춘천박물관 (강원)
+- 국립제주박물관 (제주)
 - 자유주제
 
-문화유산 이미지는 [Wikimedia Commons](https://commons.wikimedia.org/) 공개 자료를 사용합니다.
+문화유산 이미지는 [Wikimedia Commons](https://commons.wikimedia.org/) 공개 자료를 사용합니다. 이미지가 아직 없는 자료는 화면에서 placeholder로 표시됩니다.

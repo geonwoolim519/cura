@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { artifactsForMode, getArtifact } from "@/data/artifacts";
 import { objectLabel } from "@/data/museums";
+import { artifactRelevance, themeKeywords } from "@/lib/themeRelevance";
 import { kicker, page } from "@/lib/layout";
 import { useExhibition } from "@/store/ExhibitionContext";
 import type { Artifact } from "@/types/exhibition";
@@ -26,26 +27,24 @@ export function ArtifactLibrary() {
   const categories = [...new Set(artifacts.map((a) => a.category))];
   const regions = [...new Set(artifacts.map((a) => a.region))];
 
-  const themeTokens = `${state.title} ${state.theme} ${state.description}`.toLowerCase();
+  const keywords = themeKeywords(mode, state.title, state.theme, state.description);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return artifacts.filter((a) => {
+    const list = artifacts.filter((a) => {
       if (period && a.period !== period) return false;
       if (material && a.material !== material) return false;
       if (category && a.category !== category) return false;
       if (region && a.region !== region) return false;
-      if (recommended) {
-        const hay = `${a.name} ${a.keywords.join(" ")} ${a.description}`.toLowerCase();
-        if (!themeTokens.split(/\s+/).some((t) => t.length > 1 && hay.includes(t))) {
-          return false;
-        }
-      }
+      if (recommended && artifactRelevance(a, keywords) < 1) return false;
       if (!q) return true;
-      const hay = `${a.name} ${a.keywords.join(" ")} ${a.description} ${a.museum}`.toLowerCase();
+      const hay = `${a.name} ${a.keywords.join(" ")} ${(a.themes ?? []).join(" ")} ${a.description} ${a.museum}`.toLowerCase();
       return hay.includes(q);
     });
-  }, [artifacts, query, period, material, category, region, recommended, themeTokens]);
+    return [...list].sort(
+      (a, b) => artifactRelevance(b, keywords) - artifactRelevance(a, keywords),
+    );
+  }, [artifacts, query, period, material, category, region, recommended, keywords]);
 
   return (
     <div className={page + " grid gap-6 py-8 lg:grid-cols-[220px_1fr_280px]"}>
@@ -134,6 +133,9 @@ export function ArtifactLibrary() {
             </p>
             <p className="mt-4 text-sm leading-7 text-ink">{detail.description}</p>
             <p className="mt-4 text-xs text-warm">소장 · {detail.museum}</p>
+            {detail.credit ? (
+              <p className="mt-1 text-xs text-warm">크레딧 · {detail.credit}</p>
+            ) : null}
             <p className="mt-2 text-xs text-warm">
               출처: {detail.source} ·{" "}
               <a href={detail.sourceUrl} target="_blank" rel="noreferrer" className="underline">

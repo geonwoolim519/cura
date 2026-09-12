@@ -1,4 +1,5 @@
 import type { Artifact, MuseumMode } from "@/types/exhibition";
+import { chuncheonArtifacts } from "./chuncheonArtifacts";
 import { freeArtifacts } from "./freeArtifacts";
 import { gimhaeArtifacts } from "./gimhaeArtifacts";
 import { gongjuArtifacts } from "./gongjuArtifacts";
@@ -10,6 +11,7 @@ export const allArtifacts: Artifact[] = [
   ...gongjuArtifacts,
   ...gimhaeArtifacts,
   ...gyeongjuArtifacts,
+  ...chuncheonArtifacts,
   ...jejuArtifacts,
   ...metArtifacts,
   ...freeArtifacts,
@@ -29,6 +31,7 @@ export {
   gongjuArtifacts,
   gimhaeArtifacts,
   gyeongjuArtifacts,
+  chuncheonArtifacts,
   jejuArtifacts,
   metArtifacts,
   freeArtifacts,

@@ -7,6 +7,7 @@ export interface ThemePreset {
   description: string;
   imageFile: string;
   image: string;
+  keywords: string[];
 }
 
 export interface MuseumInfo {
@@ -32,6 +33,7 @@ function theme(
   themeText: string,
   description: string,
   imageFile: string,
+  keywords: string[] = [],
 ): ThemePreset {
   return {
     title,
@@ -39,6 +41,7 @@ function theme(
     description,
     imageFile,
     image: wikiThumb(imageFile, 900),
+    keywords,
   };
 }
 
@@ -97,6 +100,25 @@ export const museums: Record<MuseumMode, MuseumInfo> = {
     group: "korea",
     objectLabel: "유물",
     accent: "#b0892e",
+  },
+  chuncheon: {
+    id: "chuncheon",
+    name: "국립춘천박물관",
+    shortName: "춘천",
+    headline: "약 10만 년 전부터 이어진 강원의 역사를\n당신만의 전시로 만들어보세요.",
+    cardText:
+      "약 10만 년 전부터 이어진 강원의 역사와 선사·고대·중세·근세의 문화유산을 만나보세요.",
+    interiorText:
+      "선사에서 근세까지, 삼국이 만난 길목과 산·바다의 불교문화를 따라 강원의 시간을 전시로 구성해 보세요.",
+    image: wikiThumb("국립춘천박물관 정면.jpg", 1400),
+    imageFile: "국립춘천박물관 정면.jpg",
+    periodLabel: "강원의 역사",
+    country: "kr",
+    region: "강원",
+    tags: ["강원", "선사", "불교문화"],
+    group: "korea",
+    objectLabel: "유물",
+    accent: "#4d5c4a",
   },
   jeju: {
     id: "jeju",
@@ -158,8 +180,8 @@ export const featuredMuseums: MuseumMode[] = [
   "gongju",
   "gimhae",
   "gyeongju",
+  "chuncheon",
   "jeju",
-  "met",
 ];
 
 export const themePresets: Record<MuseumMode, ThemePreset[]> = {
@@ -221,6 +243,29 @@ export const themePresets: Record<MuseumMode, ThemePreset[]> = {
       "왕경 사람들의 생활과 의례는 어떤 물건에 남아 있는가?",
       "토기와 기마 인물형 토기 등을 통해 신라의 일상과 내세관을 조명한다.",
       "Duck-shaped pottery 오리형 토기.jpg",
+    ),
+  ],
+  chuncheon: [
+    theme(
+      "10만 년의 시간, 강원의 역사",
+      "사람이 살기 시작한 땅에서 철기시대까지",
+      "구석기부터 철기시대까지, 강원에서 살아온 사람들의 생활과 문화를 따라가 봅니다.",
+      "국립춘천박물관 내부.jpg",
+      ["구석기", "신석기", "청동기", "철기", "정착", "생활", "선사", "주먹도끼", "토기"],
+    ),
+    theme(
+      "삼국이 만난 땅, 강원",
+      "고구려·백제·신라가 오간 전략적 길목",
+      "북한강과 남한강, 동해안을 따라 고구려·백제·신라의 문화가 만난 강원의 역사를 전시합니다.",
+      "국립춘천박물관 전시 철불.jpg",
+      ["고구려", "백제", "신라", "교통로", "영서", "영동", "통일신라", "삼국"],
+    ),
+    theme(
+      "강원의 불교문화, 산과 바다에 피어나다",
+      "신라부터 고려까지 이어진 강원의 불교문화",
+      "오대산과 금강산, 낙산사와 원주를 중심으로 강원에서 발전한 불교문화와 불교미술을 살펴봅니다.",
+      "국립춘천박물관 소장 나한상 1.jpg",
+      ["불교", "불상", "사찰", "오대산", "금강산", "낙산사", "원주", "고려", "나한"],
     ),
   ],
   jeju: [
