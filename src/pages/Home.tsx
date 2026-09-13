@@ -129,7 +129,7 @@ export function Home() {
                   {museums[state.museumMode].name}
                 </p>
                 <p className="mt-4 text-sm text-navy">
-                  AI Score {state.aiEvaluation?.scores.overall ?? "–"}
+                  AI Score {state.aiEvaluation?.overallScore ?? state.aiEvaluation?.scores.overall ?? "–"}
                 </p>
               </Link>
             ) : null}

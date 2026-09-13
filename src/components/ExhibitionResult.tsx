@@ -41,7 +41,7 @@ export function ExhibitionResult() {
             {museum?.name} · {state.theme}
           </p>
           <p className="mt-8 font-display text-6xl text-navy">
-            {state.aiEvaluation?.scores.overall ?? "–"}
+            {state.aiEvaluation?.overallScore ?? state.aiEvaluation?.scores.overall ?? "–"}
           </p>
           <p className="text-sm text-muted">AI CURATOR SCORE</p>
         </div>

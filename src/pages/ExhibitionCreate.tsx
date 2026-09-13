@@ -60,7 +60,7 @@ export function ExhibitionCreate() {
   };
 
   return (
-    <div className="min-h-screen bg-ivory pb-32">
+    <div className="min-h-screen bg-ivory pb-40">
       <AppHeader kicker={museum.name} />
       <ProgressBar step={step} />
       {state.view === "edit" && state.step !== 4 && state.step !== 5 ? (
@@ -88,7 +88,13 @@ export function ExhibitionCreate() {
       {state.view === "edit" && state.step === 6 ? <AICurator /> : null}
 
       {state.view === "edit" ? (
-        <div className="fixed bottom-0 left-0 right-0 z-20 border-t border-line bg-paper/95">
+        <div
+          className={
+            state.step === 6
+              ? "border-t border-line bg-paper/95"
+              : "fixed bottom-0 left-0 right-0 z-20 border-t border-line bg-paper/95"
+          }
+        >
           <div className="mx-auto flex max-w-[1480px] items-center justify-between px-5 py-3 xl:px-8">
             <button
               type="button"

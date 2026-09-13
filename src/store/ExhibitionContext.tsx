@@ -283,12 +283,20 @@ function reducer(state: ExhibitionState, action: Action): ExhibitionState {
         ),
       };
     case "EVALUATE": {
-      const next = { ...state, aiEvaluation: evaluateExhibition(state) };
+      const next = {
+        ...state,
+        aiEvaluation: evaluateExhibition(state, state.aiEvaluation),
+      };
       rememberExhibition(next);
       return next;
     }
-    case "SET_VISITOR":
-      return { ...state, visitorPerspective: action.visitor };
+    case "SET_VISITOR": {
+      const next = { ...state, visitorPerspective: action.visitor };
+      if (state.aiEvaluation) {
+        next.aiEvaluation = evaluateExhibition(next);
+      }
+      return next;
+    }
     case "SET_PREVIEW_INDEX":
       return { ...state, previewIndex: action.index };
     default:

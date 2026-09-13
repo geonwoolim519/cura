@@ -68,12 +68,55 @@ export interface ScoreSet {
   overall: number;
 }
 
+export type CuratorCategoryId =
+  | "theme"
+  | "artifacts"
+  | "historical_flow"
+  | "layout"
+  | "information"
+  | "visitor";
+
+export interface CuratorCategoryScore {
+  id: CuratorCategoryId;
+  name: string;
+  score: number;
+  maxScore: number;
+  reason: string;
+  strength: string;
+  improvement: string;
+}
+
+export type CuratorSuggestionType =
+  | "artifact"
+  | "layout"
+  | "panel"
+  | "route"
+  | "theme"
+  | "visitor";
+
+export interface CuratorSuggestion {
+  priority: "high" | "medium" | "low";
+  type: CuratorSuggestionType;
+  message: string;
+  action: string;
+  targetStep?: number;
+}
+
 export interface AIEvaluation {
   scores: ScoreSet;
   summary: string;
   reasons: Record<keyof Omit<ScoreSet, "overall">, string>;
   visitorNotes: Record<VisitorPerspective, string>;
   createdAt: string;
+  overallScore?: number;
+  categories?: CuratorCategoryScore[];
+  strengths?: string[];
+  improvements?: CuratorSuggestion[];
+  curatorComment?: string;
+  visitorPerspective?: { type: VisitorPerspective; comment: string };
+  previousOverallScore?: number;
+  scoreDelta?: number;
+  comparisonNote?: string;
 }
 
 export type CreateView = "edit" | "preview" | "result";

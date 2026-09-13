@@ -11,7 +11,10 @@ const OPTIONS: { id: VisitorPerspective; label: string }[] = [
 
 export function VisitorPerspective() {
   const { state, dispatch } = useExhibition();
-  const note = state.aiEvaluation?.visitorNotes[state.visitorPerspective];
+  const note =
+    state.aiEvaluation?.visitorPerspective?.type === state.visitorPerspective
+      ? state.aiEvaluation.visitorPerspective.comment
+      : state.aiEvaluation?.visitorNotes[state.visitorPerspective];
 
   return (
     <section className="mt-8 border border-line bg-paper p-5">

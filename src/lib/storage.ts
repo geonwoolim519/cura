@@ -72,7 +72,7 @@ export function rememberExhibition(state: ExhibitionState): void {
     museumMode: state.museumMode,
     title: state.title,
     theme: state.theme,
-    score: state.aiEvaluation?.scores.overall ?? null,
+    score: state.aiEvaluation?.overallScore ?? state.aiEvaluation?.scores.overall ?? null,
     artifactCount: state.placedArtifacts.length,
     updatedAt: new Date().toISOString(),
   };
